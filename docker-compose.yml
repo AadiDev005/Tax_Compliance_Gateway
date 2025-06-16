@@ -12,6 +12,7 @@ services:
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "tax_user"]
       interval: 10s
+      timeout: 5s
       retries: 5
 
   mongodb:
@@ -21,9 +22,13 @@ services:
     volumes:
       - mongo_data:/data/db
     healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.runCommand('ping').ok"]
+      test: ["CMD-SHELL", "mongosh --host mongodb --port 27017 --eval 'db.runCommand(\"ping\").ok' || exit 1"]
       interval: 10s
-      retries: 5
+      timeout: 30s
+      retries: 20
+      start_period: 120s
+    networks:
+      - default
 
   redis:
     image: redis:7
@@ -34,6 +39,7 @@ services:
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
+      timeout: 5s
       retries: 5
 
   zookeeper:
@@ -58,6 +64,7 @@ services:
     healthcheck:
       test: ["CMD", "kafka-topics", "--list", "--bootstrap-server", "kafka:9092"]
       interval: 10s
+      timeout: 5s
       retries: 5
 
   api-gateway:
@@ -72,9 +79,17 @@ services:
       - redis
       - kafka
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
       interval: 10s
-      retries: 5
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+    networks:
+      - default
+
+networks:
+  default:
+    name: tax_compliance_gateway_default
 
 volumes:
   postgres_data:

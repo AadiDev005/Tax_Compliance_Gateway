@@ -1,7 +1,7 @@
 services:
   postgres:
     ports:
-      - "5433:5432"
+      - "5434:5432"
   mongodb:
     ports:
       - "27018:27017"

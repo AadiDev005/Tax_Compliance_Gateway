@@ -6,6 +6,7 @@ COPY . .
 RUN go build -o api-gateway ./cmd/server/main.go
 
 FROM alpine:latest
+RUN apk add --no-cache curl
 WORKDIR /app
 COPY --from=builder /app/api-gateway .
 COPY .env .env
