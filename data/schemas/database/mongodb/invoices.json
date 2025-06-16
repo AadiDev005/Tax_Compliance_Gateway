@@ -1,0 +1,13 @@
+{
+  "collection": "invoices",
+  "schema": {
+    "_id": "ObjectId",
+    "invoice_number": "string",
+    "jurisdiction_code": "string",
+    "amount": "number",
+    "tax_amount": "number",
+    "status": "string",
+    "created_at": "date",
+    "updated_at": "date"
+  }
+}
