@@ -1,0 +1,13 @@
+services:
+  postgres:
+    ports:
+      - "5433:5432"
+  mongodb:
+    ports:
+      - "27018:27017"
+  redis:
+    ports:
+      - "6380:6379"
+  kafka:
+    ports:
+      - "9093:9092"
