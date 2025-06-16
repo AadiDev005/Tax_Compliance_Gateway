@@ -2,13 +2,29 @@ package main
 
 import (
     "context"
+    "fmt"
     "github.com/gin-gonic/gin"
+    "github.com/prometheus/client_golang/prometheus"
     "github.com/prometheus/client_golang/prometheus/promhttp"
     "github.com/rs/zerolog/log"
     "net/http"
     "github.com/AadiDev005/Tax_Compliance_Gateway/services/api-gateway/internal/config"
     "github.com/AadiDev005/Tax_Compliance_Gateway/services/api-gateway/internal/health"
 )
+
+var (
+    httpRequestsTotal = prometheus.NewCounterVec(
+        prometheus.CounterOpts{
+            Name: "http_requests_total",
+            Help: "Total number of HTTP requests",
+        },
+        []string{"method", "path", "status"},
+    )
+)
+
+func init() {
+    prometheus.MustRegister(httpRequestsTotal)
+}
 
 func main() {
     // Load configuration
@@ -25,6 +41,15 @@ func main() {
         Msg("Configuration loaded")
 
     r := gin.Default()
+
+    // Middleware to track requests
+    r.Use(func(c *gin.Context) {
+        path := c.Request.URL.Path
+        method := c.Request.Method
+        c.Next()
+        status := fmt.Sprintf("%d", c.Writer.Status())
+        httpRequestsTotal.WithLabelValues(method, path, status).Inc()
+    })
 
     r.GET("/health", func(c *gin.Context) {
         status := health.CheckServices(context.Background(), cfg.PostgresURL, cfg.MongoURL, cfg.RedisURL)
