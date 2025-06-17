@@ -8,6 +8,7 @@ import (
     "github.com/prometheus/client_golang/prometheus/promhttp"
     "github.com/rs/zerolog/log"
     "net/http"
+    "time"
     "github.com/AadiDev005/Tax_Compliance_Gateway/services/api-gateway/internal/config"
     "github.com/AadiDev005/Tax_Compliance_Gateway/services/api-gateway/internal/health"
 )
@@ -20,10 +21,18 @@ var (
         },
         []string{"method", "path", "status"},
     )
+    httpRequestDurationSeconds = prometheus.NewHistogramVec(
+        prometheus.HistogramOpts{
+            Name:    "http_request_duration_seconds",
+            Help:    "Duration of HTTP requests in seconds",
+            Buckets: prometheus.DefBuckets,
+        },
+        []string{"method", "path", "status"},
+    )
 )
 
 func init() {
-    prometheus.MustRegister(httpRequestsTotal)
+    prometheus.MustRegister(httpRequestsTotal, httpRequestDurationSeconds)
 }
 
 func main() {
@@ -42,13 +51,16 @@ func main() {
 
     r := gin.Default()
 
-    // Middleware to track requests
+    // Middleware to track requests and latency
     r.Use(func(c *gin.Context) {
+        start := time.Now()
         path := c.Request.URL.Path
         method := c.Request.Method
         c.Next()
         status := fmt.Sprintf("%d", c.Writer.Status())
+        duration := time.Since(start).Seconds()
         httpRequestsTotal.WithLabelValues(method, path, status).Inc()
+        httpRequestDurationSeconds.WithLabelValues(method, path, status).Observe(duration)
     })
 
     r.GET("/health", func(c *gin.Context) {
