@@ -6,9 +6,6 @@ package-lock.json
 services/api-gateway/.env
 .vscode/
 .idea/
-package.json
-pnpm-workspace.yaml
-turbo.json
-tools/cli/
 .turbo/
 services/api-gateway/server
+tmp/
