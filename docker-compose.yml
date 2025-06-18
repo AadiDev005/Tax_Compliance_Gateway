@@ -1,4 +1,27 @@
 services:
+  audit-service:
+    build:
+      context: ./services/audit-service
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      - POSTGRES_URL=postgres://tax_user:tax_password@postgres:5432/tax_compliance?sslmode=disable
+      - MONGO_URL=mongodb://mongodb:27017/tax_compliance
+      - REDIS_URL=redis:6379
+      - KAFKA_BROKERS=kafka:9092
+      - APP_ENV=development
+    networks:
+      - default
   api-gateway:
     build:
       context: ./services/api-gateway
