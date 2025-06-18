@@ -1,14 +1,12 @@
-# Build artifacts
 services/api-gateway/tmp/
 *.log
-
-# Node.js
 node_modules/
 package-lock.json
-
-# Environment
 .env
-
-# IDE
+services/api-gateway/.env
 .vscode/
 .idea/
+package.json
+pnpm-workspace.yaml
+turbo.json
+tools/cli/
