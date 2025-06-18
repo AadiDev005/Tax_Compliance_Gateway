@@ -1,16 +1,17 @@
 package main
 
 import (
-    "context"
+    "database/sql"
     "fmt"
     "github.com/gin-gonic/gin"
     "github.com/prometheus/client_golang/prometheus"
     "github.com/prometheus/client_golang/prometheus/promhttp"
     "github.com/rs/zerolog/log"
-    "net/http"
     "time"
+    _ "github.com/lib/pq"
     "github.com/AadiDev005/Tax_Compliance_Gateway/services/api-gateway/internal/config"
     "github.com/AadiDev005/Tax_Compliance_Gateway/services/api-gateway/internal/health"
+    "github.com/AadiDev005/Tax_Compliance_Gateway/services/api-gateway/internal/taxrules"
 )
 
 var (
@@ -36,18 +37,13 @@ func init() {
 }
 
 func main() {
-    // Load configuration
     cfg := config.LoadConfig()
-    if cfg.PostgresURL == "" {
-        log.Fatal().Msg("POSTGRES_URL is not set")
+
+    db, err := sql.Open("postgres", cfg.PostgresURL)
+    if err != nil {
+        log.Fatal().Err(err).Msg("Failed to connect to PostgreSQL")
     }
-    log.Info().
-        Str("postgres_url", cfg.PostgresURL).
-        Str("mongo_url", cfg.MongoURL).
-        Str("redis_url", cfg.RedisURL).
-        Str("kafka_brokers", cfg.KafkaBrokers).
-        Str("app_env", cfg.AppEnv).
-        Msg("Configuration loaded")
+    defer db.Close()
 
     r := gin.Default()
 
@@ -63,18 +59,11 @@ func main() {
         httpRequestDurationSeconds.WithLabelValues(method, path, status).Observe(duration)
     })
 
-    r.GET("/health", func(c *gin.Context) {
-        status := health.CheckServices(context.Background(), cfg.PostgresURL, cfg.MongoURL, cfg.RedisURL)
-        if status.Postgres && status.MongoDB && status.Redis {
-            c.JSON(http.StatusOK, gin.H{"status": "healthy", "services": status})
-        } else {
-            c.JSON(http.StatusServiceUnavailable, gin.H{"status": "unhealthy", "services": status})
-            log.Info().Interface("status", status).Msg("Health check requested")
-        }
-    })
-
+    r.GET("/health", health.CheckHandler(cfg))
     r.GET("/metrics", gin.WrapH(promhttp.Handler()))
+    r.GET("/tax-rules", taxrules.GetTaxRules(db))
 
+    log.Info().Msg("Starting server on port 8080")
     if err := r.Run(":8080"); err != nil {
         log.Fatal().Err(err).Msg("Failed to start server")
     }
