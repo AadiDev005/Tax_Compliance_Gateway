@@ -9,3 +9,5 @@ services/api-gateway/.env
 .turbo/
 services/api-gateway/server
 tmp/
+api-gateway
+*.bak
