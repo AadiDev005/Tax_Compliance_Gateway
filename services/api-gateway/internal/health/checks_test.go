@@ -2,19 +2,19 @@ package health
 
 import (
     "context"
+    "strings"
     "testing"
-    "github.com/stretchr/testify/assert"
 )
 
 func TestCheckServices(t *testing.T) {
-    ctx := context.Background()
-    // Use invalid URLs to test failure case
-    postgresURL := "postgres://invalid:invalid@localhost:5432/invalid"
-    mongoURL := "mongodb://invalid:27017/invalid"
-    redisURL := "localhost:6379/invalid"
-
-    status := CheckServices(ctx, postgresURL, mongoURL, redisURL)
-    assert.False(t, status.Postgres, "Postgres should be unhealthy with invalid URL")
-    assert.False(t, status.MongoDB, "MongoDB should be unhealthy with invalid URL")
-    assert.False(t, status.Redis, "Redis should be unhealthy with invalid URL")
+    status := CheckServices(context.Background(), "invalid://postgres", "invalid://mongodb", "invalid:redis")
+    if !strings.Contains(status["postgres"], "error") {
+        t.Errorf("Expected postgres error, got %v", status["postgres"])
+    }
+    if !strings.Contains(status["mongodb"], "error") {
+        t.Errorf("Expected mongodb error, got %v", status["mongodb"])
+    }
+    if !strings.Contains(status["redis"], "error") {
+        t.Errorf("Expected redis error, got %v", status["redis"])
+    }
 }
