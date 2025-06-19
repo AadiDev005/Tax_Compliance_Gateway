@@ -1,31 +1,17 @@
 package config
 
-import (
-    "github.com/spf13/viper"
-    "log"
-)
-
 type Config struct {
-    PostgresURL  string `mapstructure:"POSTGRES_URL"`
-    MongoURL     string `mapstructure:"MONGO_URL"`
-    RedisURL     string `mapstructure:"REDIS_URL"`
-    KafkaBrokers string `mapstructure:"KAFKA_BROKERS"`
-    AppEnv       string `mapstructure:"APP_ENV"`
+    AppEnv      string
+    PostgresURL string
+    MongoURL    string
+    RedisURL    string
 }
 
-func LoadConfig() *Config {
-    viper.SetConfigFile(".env")
-    viper.AddConfigPath("../../..") // Look for .env in project root
-    viper.AutomaticEnv()
-
-    if err := viper.ReadInConfig(); err != nil {
-        log.Fatalf("Error reading config file: %v", err)
+func GetConfig() *Config {
+    return &Config{
+        AppEnv:      "development",
+        PostgresURL: "postgres://tax_user:tax_password@postgres:5432/tax_compliance?sslmode=disable",
+        MongoURL:    "mongodb://mongodb:27017/tax_compliance",
+        RedisURL:    "redis:6379",
     }
-
-    var config Config
-    if err := viper.Unmarshal(&config); err != nil {
-        log.Fatalf("Error unmarshaling config: %v", err)
-    }
-
-    return &config
 }
