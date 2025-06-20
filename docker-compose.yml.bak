@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    environment:
+      - KAFKA_PROCESS_ROLES=broker,controller
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+  api-gateway:
+    image: tax_compliance_gateway-api-gateway
+    environment:
+      - GIN_MODE=release
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+  tax-engine:
+    image: tax_compliance_gateway-tax-engine
+    environment:
+      - GIN_MODE=release
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres
+      - kafka
+  audit-service:
+    image: tax_compliance_gateway-audit-service
+    environment:
+      - GIN_MODE=release
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+  # Add other services (e.g., postgres, redis, zookeeper) as per your setup

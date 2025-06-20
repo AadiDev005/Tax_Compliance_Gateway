@@ -1,6 +1,7 @@
+version: '3.8'
 services:
   postgres:
-    image: postgres:15
+    image: postgres:16
     environment:
       POSTGRES_USER: tax_user
       POSTGRES_PASSWORD: tax_password
@@ -16,7 +17,7 @@ services:
       retries: 5
 
   mongodb:
-    image: mongo:6
+    image: mongo:7
     ports:
       - "27017:27017"
     volumes:
@@ -112,6 +113,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  tax-engine:
+    build: ./services/tax-engine
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres
+      - redis
 
 networks:
   default:
