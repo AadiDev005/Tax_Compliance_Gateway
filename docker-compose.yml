@@ -126,7 +126,16 @@ services:
     ports:
       - "8083:8083"
     depends_on:
-      - kafka  # Changed from tax_compliance_gateway-kafka-1 to kafka
+      - kafka
+    networks:
+      - default
+
+  document-processor:
+    build: ./services/document-processor
+    ports:
+      - "8084:8084"
+    depends_on:
+      - mongodb
     networks:
       - default
 
