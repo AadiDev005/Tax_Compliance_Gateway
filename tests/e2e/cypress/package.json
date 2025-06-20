@@ -1,0 +1,8 @@
+{
+  "name": "tax-compliance-cypress-tests",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "cypress": "^14.5.0"
+  }
+}

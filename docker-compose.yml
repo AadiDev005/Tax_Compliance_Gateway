@@ -1,164 +1,80 @@
 services:
-  audit-service:
-    build:
-      context: ./services/audit-service
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8081"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      mongodb:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      kafka:
-        condition: service_started
+  kafka:
+    image: confluentinc/cp-kafka:latest
     environment:
-      - POSTGRES_URL=postgres://tax_user:tax_password@postgres:5432/tax_compliance?sslmode=disable
-      - MONGO_URL=mongodb://mongodb:27017/tax_compliance
-      - REDIS_URL=redis:6379
-      - KAFKA_BROKERS=kafka:9092
-      - APP_ENV=development
-    networks:
-      - default
-  api-gateway:
-    build:
-      context: ./services/api-gateway
-      dockerfile: Dockerfile
+      - KAFKA_PROCESS_ROLES=broker,controller
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - CLUSTER_ID=$(uuidgen) # Generate a new UUID
     ports:
-      - "8080:8080"
+      - "9092:9092"
     depends_on:
-      postgres:
-        condition: service_healthy
-      mongodb:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      kafka:
-        condition: service_started
+      - zookeeper
+    healthcheck:
+      test: ["CMD", "kafka-topics.sh", "--list", "--bootstrap-server", "localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
     environment:
-      - POSTGRES_URL=postgres://tax_user:tax_password@postgres:5432/tax_compliance?sslmode=disable
-      - MONGO_URL=mongodb://mongodb:27017/tax_compliance
-      - REDIS_URL=redis:6379
-      - KAFKA_BROKERS=kafka:9092
-      - APP_ENV=development
-    networks:
-      - default
+      - ZOOKEEPER_CLIENT_PORT=2181
+    ports:
+      - "2181:2181"
   postgres:
-    image: postgres:15
+    image: postgres:16
     environment:
-      POSTGRES_USER: tax_user
-      POSTGRES_PASSWORD: tax_password
-      POSTGRES_DB: tax_compliance
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=tax_compliance
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "tax_user"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - default
-  mongodb:
-    image: mongo:6
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 40s
-    networks:
-      - default
+      - pg_data:/var/lib/postgresql/data
   redis:
-    image: redis:7
+    image: redis:7.2
     ports:
       - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - default
-  kafka:
-    image: confluentinc/cp-kafka:7.3.0
+  api-gateway:
+    image: tax_compliance_gateway-api-gateway
+    environment:
+      - GIN_MODE=release
+    ports:
+      - "8080:8080"
     depends_on:
-      zookeeper:
-        condition: service_started
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    networks:
-      - default
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.3.0
-    ports:
-      - "2181:2181"
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    networks:
-      - default
-  prometheus:
-    image: prom/prometheus:v2.45.0
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    networks:
-      - default
-  grafana:
-    image: grafana/grafana:9.5.2
-    ports:
-      - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    volumes:
-      - grafana_data:/var/lib/grafana
-    networks:
-      - default
-volumes:
-  postgres_data:
-  mongo_data:
-  redis_data:
-  grafana_data:
-networks:
-  default:
-    driver: bridge
-
+      - postgres
+      - redis
   tax-engine:
-    build:
-      context: ./services/tax-engine
-      dockerfile: Dockerfile
+    image: tax_compliance_gateway-tax-engine
+    environment:
+      - GIN_MODE=release
     ports:
       - "8082:8082"
     depends_on:
-      postgres:
-        condition: service_healthy
-      mongodb:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      kafka:
-        condition: service_started
+      - postgres
+      - kafka
+  audit-service:
+    image: tax_compliance_gateway-audit-service
     environment:
-      - POSTGRES_URL=postgres://tax_user:tax_password@postgres:5432/tax_compliance?sslmode=disable
-      - MONGO_URL=mongodb://mongodb:27017/tax_compliance
-      - REDIS_URL=redis:6379
-      - KAFKA_BROKERS=kafka:9092
-      - APP_ENV=development
-    networks:
-      - default
+      - GIN_MODE=release
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+volumes:
+  pg_data:
+grafana:
+  image: grafana/grafana:latest
+  ports:
+    - "3000:3000"
+prometheus:
+  image: prom/prometheus:latest
+  ports:
+    - "9090:9090"
+  volumes:
+    - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+business-portal:
+  build: ./services/business-portal
+  ports:
+    - "8083:8083"

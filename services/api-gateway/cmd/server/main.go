@@ -1,25 +1,19 @@
 package main
 
 import (
-	"tax-compliance-gateway/internal/config"
-	"tax-compliance-gateway/internal/handlers/rest/taxrules"
-	"tax-compliance-gateway/internal/health"
-
 	"github.com/gin-gonic/gin"
-	"github.com/redis/go-redis/v9"
+	"tax-compliance-gateway/internal/handlers"
+	"tax-compliance-gateway/internal/health"
 )
 
 func main() {
-	r := gin.Default()
-
-	cfg := config.GetConfig()
-	redisClient := redis.NewClient(&redis.Options{
-		Addr: cfg.RedisURL,
-	})
-
-	taxHandler := taxrules.NewHandler(redisClient)
-	r.GET("/tax-rules", taxHandler.GetTaxRules)
-	r.GET("/health", health.CheckHandler(cfg))
-
-	r.Run(":8080")
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.New()
+	router.Use(gin.Logger())
+	router.Use(gin.Recovery())
+	router.SetTrustedProxies([]string{"172.18.0.1"}) // Adjust proxy IP as needed
+	router.GET("/health", health.CheckHandler)
+	router.GET("/metrics", health.MetricsHandler)
+	router.GET("/tax-rules", handlers.GetTaxRules)
+	router.Run(":8080")
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func TestCheckServices(t *testing.T) {
-    status := CheckServices(context.Background(), "invalid://postgres", "invalid://mongodb", "invalid:redis")
+    status := CheckServices(context.Background(), "invalid://postgres", "invalid://mongodb", "invalid://redis")
     if !strings.Contains(status["postgres"], "error") {
         t.Errorf("Expected postgres error, got %v", status["postgres"])
     }
