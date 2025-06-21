@@ -2,6 +2,6 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'api-gateway'
+  - job_name: 'tax-services'
     static_configs:
-      - targets: ['api-gateway:8080']
+      - targets: ['api-gateway:8080', 'tax-engine:8082', 'audit-service:8083', 'document-processor:8084']
