@@ -1,11 +1,16 @@
 package health
 
-import "github.com/gin-gonic/gin"
+import (
+    "log"
+    "github.com/gin-gonic/gin"
+)
 
 func CheckHandler(c *gin.Context) {
-	c.JSON(200, gin.H{"status": "healthy"})
+    log.Println("Received /health request")
+    c.JSON(200, gin.H{"status": "ok"})
 }
 
 func MetricsHandler(c *gin.Context) {
-	c.JSON(200, gin.H{"metrics": "service is running"})
+    log.Println("Received /metrics request")
+    c.JSON(200, gin.H{"metrics": "ok"})
 }
