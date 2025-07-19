@@ -1,0 +1,33 @@
+api-gateway-1  | [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+api-gateway-1  | 
+api-gateway-1  | [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+api-gateway-1  |  - using env:	export GIN_MODE=release
+api-gateway-1  |  - using code:	gin.SetMode(gin.ReleaseMode)
+api-gateway-1  | 
+api-gateway-1  | [GIN-debug] GET    /health                   --> main.main.func1 (3 handlers)
+api-gateway-1  | [GIN-debug] GET    /tax-rules                --> main.main.func3 (4 handlers)
+api-gateway-1  | [GIN-debug] POST   /tax-rules                --> main.main.func4 (4 handlers)
+api-gateway-1  | [GIN-debug] PUT    /tax-rules/:id            --> main.main.func5 (4 handlers)
+api-gateway-1  | [GIN-debug] DELETE /tax-rules/:id            --> main.main.func6 (4 handlers)
+api-gateway-1  | [GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+api-gateway-1  | Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+api-gateway-1  | [GIN-debug] Listening and serving HTTP on :8080
+api-gateway-1  | [GIN] 2025/06/30 - 17:33:50 | 401 |         128µs |      172.18.0.4 | GET      "/metrics"
+api-gateway-1  | [GIN] 2025/06/30 - 17:33:58 | 200 |     464.333µs |             ::1 | GET      "/health"
+api-gateway-1  | [GIN] 2025/06/30 - 17:34:05 | 401 |     251.125µs |      172.18.0.4 | GET      "/metrics"
+api-gateway-1  | [GIN] 2025/06/30 - 17:34:08 | 200 |      316.25µs |             ::1 | GET      "/health"
+api-gateway-1  | [GIN] 2025/06/30 - 17:34:19 | 200 |     832.333µs |             ::1 | GET      "/health"
+api-gateway-1  | [GIN] 2025/06/30 - 17:34:20 | 401 |     253.875µs |      172.18.0.4 | GET      "/metrics"
+api-gateway-1  | [GIN] 2025/06/30 - 17:34:29 | 200 |      333.75µs |             ::1 | GET      "/health"
+api-gateway-1  | [GIN] 2025/06/30 - 17:34:35 | 401 |       129.5µs |      172.18.0.4 | GET      "/metrics"
+api-gateway-1  | [GIN] 2025/06/30 - 17:34:39 | 200 |     292.583µs |             ::1 | GET      "/health"
+api-gateway-1  | [GIN] 2025/06/30 - 17:34:49 | 200 |     339.083µs |             ::1 | GET      "/health"
+api-gateway-1  | [GIN] 2025/06/30 - 17:34:50 | 401 |        38.5µs |      172.18.0.4 | GET      "/metrics"
+api-gateway-1  | [GIN] 2025/06/30 - 17:34:59 | 200 |     677.875µs |             ::1 | GET      "/health"
+api-gateway-1  | [GIN] 2025/06/30 - 17:35:05 | 401 |     227.917µs |      172.18.0.4 | GET      "/metrics"
+api-gateway-1  | [GIN] 2025/06/30 - 17:35:09 | 200 |        1.43ms |             ::1 | GET      "/health"
+api-gateway-1  | [GIN] 2025/06/30 - 17:35:19 | 200 |       513.5µs |             ::1 | GET      "/health"
+api-gateway-1  | [GIN] 2025/06/30 - 17:35:20 | 401 |      51.125µs |      172.18.0.4 | GET      "/metrics"
+api-gateway-1  | [GIN] 2025/06/30 - 17:35:30 | 200 |     454.583µs |             ::1 | GET      "/health"
+api-gateway-1  | [GIN] 2025/06/30 - 17:35:35 | 401 |    4.874417ms |      172.18.0.4 | GET      "/metrics"
+api-gateway-1  | [GIN] 2025/06/30 - 17:35:40 | 200 |    1.175458ms |             ::1 | GET      "/health"

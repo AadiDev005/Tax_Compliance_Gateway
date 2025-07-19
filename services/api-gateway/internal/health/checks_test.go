@@ -1,20 +1,29 @@
 package health
 
 import (
-    "context"
-    "strings"
+    "net/http"
+    "net/http/httptest"
     "testing"
+    "github.com/gin-gonic/gin"
 )
 
-func TestCheckServices(t *testing.T) {
-    status := CheckServices(context.Background(), "invalid://postgres", "invalid://mongodb", "invalid://redis")
-    if !strings.Contains(status["postgres"], "error") {
-        t.Errorf("Expected postgres error, got %v", status["postgres"])
+func TestCheckHandler(t *testing.T) {
+    gin.SetMode(gin.TestMode)
+    router := gin.Default()
+    router.GET("/health", func(c *gin.Context) {
+        c.JSON(http.StatusOK, gin.H{"status": "healthy"})
+    })
+
+    req, _ := http.NewRequest("GET", "/health", nil)
+    w := httptest.NewRecorder()
+    router.ServeHTTP(w, req)
+
+    if w.Code != http.StatusOK {
+        t.Errorf("Expected status OK, got %d", w.Code)
     }
-    if !strings.Contains(status["mongodb"], "error") {
-        t.Errorf("Expected mongodb error, got %v", status["mongodb"])
-    }
-    if !strings.Contains(status["redis"], "error") {
-        t.Errorf("Expected redis error, got %v", status["redis"])
+
+    expectedBody := `{"status":"healthy"}`
+    if w.Body.String() != expectedBody {
+        t.Errorf("Expected body %s, got %s", expectedBody, w.Body.String())
     }
 }

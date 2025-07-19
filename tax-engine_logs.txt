@@ -1,0 +1,6 @@
+tax-engine-1  | 2025/07/01 08:24:33 Failed to connect to Kafka (attempt 1): kafka: client has run out of available brokers to talk to: dial tcp: missing address
+tax-engine-1  | 2025/07/01 08:24:35 Failed to connect to Kafka (attempt 2): kafka: client has run out of available brokers to talk to: dial tcp: missing address
+tax-engine-1  | 2025/07/01 08:24:38 Failed to connect to Kafka (attempt 3): kafka: client has run out of available brokers to talk to: dial tcp: missing address
+tax-engine-1  | 2025/07/01 08:24:41 Failed to connect to Kafka (attempt 4): kafka: client has run out of available brokers to talk to: dial tcp: missing address
+tax-engine-1  | 2025/07/01 08:24:44 Failed to connect to Kafka (attempt 5): kafka: client has run out of available brokers to talk to: dial tcp: missing address
+tax-engine-1  | 2025/07/01 08:24:46 Failed to start Kafka producer after retries: kafka: client has run out of available brokers to talk to: dial tcp: missing address

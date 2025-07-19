@@ -1,0 +1,10 @@
+{
+    "invoice": {
+        "total": 200.00,
+        "currency": "EUR",
+        "country": "DE",
+        "date": "2025-01-19",
+        "tax": 38.00,
+        "vat": 19.0
+    }
+}

@@ -1,0 +1,30 @@
+package main
+
+import (
+    "context"
+    "github.com/gin-gonic/gin"
+    "go.mongodb.org/mongo-driver/mongo"
+    "go.mongodb.org/mongo-driver/mongo/options"
+    "log"
+)
+
+func main() {
+    client, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://mongodb:27017"))
+    if err != nil {
+        log.Fatalf("Failed to connect to MongoDB: %v", err)
+    }
+    defer client.Disconnect(context.Background())
+
+    r := gin.Default()
+    r.GET("/health", func(c *gin.Context) {
+        c.JSON(200, gin.H{"status": "healthy"})
+    })
+
+    r.POST("/invoices", func(c *gin.Context) {
+        c.JSON(200, gin.H{"message": "Invoice storage placeholder"})
+    })
+
+    if err := r.Run(":8083"); err != nil {
+        log.Fatalf("Failed to start server: %v", err)
+    }
+}

@@ -1,0 +1,8 @@
+audit-service-1  | 2025/07/01 07:32:32 Successfully connected to database
+audit-service-1  | 2025/07/01 07:32:32 Successfully connected to Kafka consumer
+audit-service-1  | 2025/07/01 07:50:56 Processing audit log event: {ID:0 JurisdictionID:UK Rate:0.2 RuleType:VAT Description:UK VAT EffectiveDate:2025-01-01 EventType:tax_rule_created}
+audit-service-1  | 2025/07/01 07:50:56 Successfully inserted audit log for event: tax_rule_created
+audit-service-1  | 2025/07/01 07:58:48 Processing audit log event: {ID:0 JurisdictionID:UK Rate:0.2 RuleType:VAT Description:UK VAT EffectiveDate:2025-01-01 EventType:tax_rule_created}
+audit-service-1  | 2025/07/01 07:58:48 Successfully inserted audit log for event: tax_rule_created
+audit-service-1  | 2025/07/01 08:25:21 Processing audit log event: {ID:0 JurisdictionID:UK Rate:0.2 RuleType:VAT Description:UK VAT EffectiveDate:2025-01-01 EventType:tax_rule_created}
+audit-service-1  | 2025/07/01 08:25:21 Successfully inserted audit log for event: tax_rule_created

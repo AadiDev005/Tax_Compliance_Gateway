@@ -1,25 +1,19 @@
-INSERT INTO jurisdictions (country_code, name) VALUES
-('MX', 'Mexico'),
-('DE', 'Germany'),
-('PL', 'Poland'),
-('IT', 'Italy'),
-('BR', 'Brazil')
-ON CONFLICT (country_code) DO NOTHING;
-
-INSERT INTO tax_rules (jurisdiction_id, rule_type, rate, effective_date, description)
-SELECT j.id, r.rule_type, r.rate, r.effective_date::DATE, r.description
-FROM (VALUES
-    ('MX', 'IVA', 16.00, '2025-01-01', 'Standard IVA rate'),
-    ('DE', 'VAT', 19.00, '2025-01-01', 'Standard VAT rate'),
-    ('PL', 'VAT', 23.00, '2025-01-01', 'Standard VAT rate'),
-    ('IT', 'VAT', 22.00, '2025-01-01', 'Standard VAT rate'),
-    ('BR', 'ICMS', 17.00, '2025-01-01', 'Standard ICMS rate')
-) AS r(country_code, rule_type, rate, effective_date, description)
-JOIN jurisdictions j ON j.country_code = r.country_code
-WHERE NOT EXISTS (
-    SELECT 1 FROM tax_rules tr
-    WHERE tr.jurisdiction_id = j.id
-    AND tr.rule_type = r.rule_type
-    AND tr.rate = r.rate
-    AND tr.effective_date = r.effective_date::DATE
+CREATE TABLE IF NOT EXISTS tax_rules (
+    id SERIAL PRIMARY KEY,
+    jurisdiction_id TEXT NOT NULL UNIQUE,
+    rate DOUBLE PRECISION NOT NULL,
+    rule_type TEXT NOT NULL,
+    effective_date TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id SERIAL PRIMARY KEY,
+    event TEXT NOT NULL,
+    jurisdiction_id TEXT NOT NULL,
+    amount DOUBLE PRECISION NOT NULL,
+    created_at TEXT NOT NULL
+);
+INSERT INTO tax_rules (jurisdiction_id, rate, rule_type, effective_date)
+VALUES
+    ('MX', 0.16, 'VAT', '2025-07-04'),
+    ('DE', 0.19, 'VAT', '2025-07-04')
+ON CONFLICT (jurisdiction_id) DO NOTHING;

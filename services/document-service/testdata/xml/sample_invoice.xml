@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<invoice>
+    <total>150.00</total>
+    <currency>EUR</currency>
+    <country>DE</country>
+    <date>2025-01-19</date>
+    <tax>28.50</tax>
+    <vat>19.0</vat>
+</invoice>
