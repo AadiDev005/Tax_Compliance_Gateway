@@ -1,42 +1,37 @@
 package main
 
 import (
-    "context"
-    "github.com/gin-gonic/gin"
-    "github.com/jmoiron/sqlx"
     "log"
-    _ "github.com/lib/pq"
+    "net/http"
+    "os"
+
+    "github.com/gin-gonic/gin"
 )
 
-type ComplianceReport struct {
-    JurisdictionID string  `json:"jurisdiction_id"`
-    ComplianceScore float64 `json:"compliance_score"`
-}
-
 func main() {
-    db, err := sqlx.Open("postgres", "host=postgres user=admin password=secret dbname=tax_compliance sslmode=disable")
-    if err != nil {
-        log.Fatalf("Failed to connect to database: %v", err)
-    }
-    defer db.Close()
-
     r := gin.Default()
+
+    // Health check
     r.GET("/health", func(c *gin.Context) {
-        c.JSON(200, gin.H{"status": "healthy"})
+        c.JSON(http.StatusOK, gin.H{"status": "healthy", "service": "regulatory-service"})
     })
 
-    r.GET("/compliance-report", func(c *gin.Context) {
-        reports := []ComplianceReport{
-            {JurisdictionID: "MX", ComplianceScore: 0.95},
-            {JurisdictionID: "DE", ComplianceScore: 0.90},
-            {JurisdictionID: "PL", ComplianceScore: 0.88},
-            {JurisdictionID: "IT", ComplianceScore: 0.87},
-            {JurisdictionID: "BR", ComplianceScore: 0.85},
+    // Regulatory changes endpoint (placeholder)
+    r.GET("/regulatory-changes", func(c *gin.Context) {
+        changes := []map[string]interface{}{
+            {"id": 1, "country": "DE", "change": "VAT rate update", "effective_date": "2024-01-01"},
+            {"id": 2, "country": "MX", "change": "IVA compliance rule", "effective_date": "2024-02-01"},
         }
-        c.JSON(200, gin.H{"reports": reports})
+        c.JSON(http.StatusOK, gin.H{"regulatory_changes": changes})
     })
 
-    if err := r.Run(":8084"); err != nil {
+    port := os.Getenv("PORT")
+    if port == "" {
+        port = "8085"
+    }
+
+    log.Printf("🚀 Regulatory service starting on port %s", port)
+    if err := r.Run(":" + port); err != nil {
         log.Fatalf("Failed to start server: %v", err)
     }
 }
