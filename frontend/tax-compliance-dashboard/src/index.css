@@ -1,0 +1,89 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Base font sizing and scaling */
+:root {
+  font-feature-settings: "cv03", "cv04", "cv11";
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Consistent spacing system */
+.space-optimal > * + * {
+  margin-top: 1.5rem;
+}
+
+/* Perfect form control sizing */
+.form-input-optimal {
+  height: 3rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  border-width: 2px;
+  border-radius: 0.5rem;
+  padding-left: 2.5rem;
+  padding-right: 1rem;
+  transition: all 0.2s ease;
+}
+
+.form-input-optimal:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #3B82F6;
+}
+
+/* Optimal card sizing */
+.card-optimal {
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid #f3f4f6;
+  background-color: white;
+}
+
+.card-optimal:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Perfect button sizing */
+.btn-optimal {
+  height: 3rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+/* Responsive text scaling */
+@media (max-width: 640px) {
+  .text-responsive-xl { font-size: 1.25rem; }
+  .text-responsive-lg { font-size: 1.125rem; }
+  .text-responsive { font-size: 1rem; }
+}
+
+@media (min-width: 641px) {
+  .text-responsive-xl { font-size: 1.5rem; }
+  .text-responsive-lg { font-size: 1.25rem; }
+  .text-responsive { font-size: 1.125rem; }
+}
+
+/* Grid gap optimization */
+.grid-optimal {
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .grid-optimal {
+    gap: 2rem;
+  }
+}

@@ -12,8 +12,9 @@ import (
 )
 
 type TaxRequest struct {
-    Amount        float64 `json:"amount" validate:"required,gt=0"`
-    Country       string  `json:"country,omitempty"`
+    Amount         float64 `json:"amount" validate:"required,gt=0"`
+    Currency       string  `json:"currency,omitempty"`
+    Country        string  `json:"country,omitempty"`
     JurisdictionID string  `json:"jurisdiction_id,omitempty"`
 }
 
@@ -24,8 +25,8 @@ type TaxResponse struct {
     NetAmount   float64 `json:"net_amount"`
     GrossAmount float64 `json:"gross_amount"`
     Currency    string  `json:"currency"`
-    Tax         float64 `json:"tax"`   // For backward compatibility
-    Total       float64 `json:"total"` // For backward compatibility
+    Tax         float64 `json:"tax"`
+    Total       float64 `json:"total"`
 }
 
 type Handler struct {
@@ -44,7 +45,11 @@ func NewHandler(taxService *services.TaxService, producer sarama.SyncProducer) *
 
 func (h *Handler) HealthCheckHandler() gin.HandlerFunc {
     return func(c *gin.Context) {
-        c.JSON(http.StatusOK, gin.H{"status": "healthy", "service": "tax-engine"})
+        c.JSON(http.StatusOK, gin.H{
+            "status":    "healthy",
+            "service":   "tax-engine",
+            "timestamp": time.Now().Format(time.RFC3339),
+        })
     }
 }
 
@@ -56,37 +61,30 @@ func (h *Handler) CalculateTax() gin.HandlerFunc {
             return
         }
 
-        // Use either jurisdiction_id or country
         jurisdiction := req.JurisdictionID
         if jurisdiction == "" {
             jurisdiction = req.Country
         }
         if jurisdiction == "" {
-            jurisdiction = "DE" // Default
+            jurisdiction = "DE"
         }
 
-        // Simple tax calculation without database dependency
-        var taxRate float64
-        switch jurisdiction {
-        case "DE", "GERMANY":
-            taxRate = 0.19 // 19% VAT
-        case "MX", "MEXICO":
-            taxRate = 0.16 // 16% IVA
-        case "PL", "POLAND":
-            taxRate = 0.23 // 23% VAT
-        case "IT", "ITALY":
-            taxRate = 0.22 // 22% VAT
-        case "BR", "BRAZIL":
-            taxRate = 0.17 // 17% ICMS
-        default:
-            taxRate = 0.20 // Default 20%
+        tax, total, err := h.taxService.CalculateTax(c, req.Amount, jurisdiction)
+        if err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+            return
         }
 
-        netAmount := req.Amount
-        taxAmount := netAmount * taxRate
-        grossAmount := netAmount + taxAmount
+        taxRate := 0.0
+        if req.Amount > 0 {
+            taxRate = tax / req.Amount
+        }
 
-        // Send to Kafka if available (don't fail if Kafka is down)
+        currency := req.Currency
+        if currency == "" {
+            currency = "EUR"
+        }
+
         if h.producer != nil {
             event := struct {
                 Amount        float64 `json:"amount"`
@@ -95,7 +93,7 @@ func (h *Handler) CalculateTax() gin.HandlerFunc {
                 CreatedAt     string  `json:"created_at"`
             }{
                 Amount:        req.Amount,
-                Tax:           taxAmount,
+                Tax:           tax,
                 JurisdictionID: jurisdiction,
                 CreatedAt:     time.Now().Format(time.RFC3339),
             }
@@ -109,12 +107,12 @@ func (h *Handler) CalculateTax() gin.HandlerFunc {
         response := TaxResponse{
             Country:     jurisdiction,
             TaxRate:     taxRate,
-            TaxAmount:   taxAmount,
-            NetAmount:   netAmount,
-            GrossAmount: grossAmount,
-            Currency:    "EUR",
-            Tax:         taxAmount,   // Backward compatibility
-            Total:       grossAmount, // Backward compatibility
+            TaxAmount:   tax,
+            NetAmount:   req.Amount,
+            GrossAmount: total,
+            Currency:    currency,
+            Tax:         tax,
+            Total:       total,
         }
 
         c.JSON(http.StatusOK, response)
