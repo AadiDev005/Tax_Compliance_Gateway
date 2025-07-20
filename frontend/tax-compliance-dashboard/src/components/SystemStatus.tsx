@@ -105,7 +105,7 @@ const SystemStatus: React.FC = () => {
               <p className="text-sm font-medium text-blue-900">Tax Engine Features:</p>
             </div>
             <div className="flex flex-wrap gap-1">
-              {taxEngineHealth.data.features.map((feature, index) => (
+              {taxEngineHealth.data.features.map((feature: string, index: number) => (
                 <span
                   key={index}
                   className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full"

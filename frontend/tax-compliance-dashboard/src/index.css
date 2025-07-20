@@ -1,89 +1,156 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Base font sizing and scaling */
-:root {
-  font-feature-settings: "cv03", "cv04", "cv11";
+/* Reset and base styles for full-width layout */
+* {
+  box-sizing: border-box;
 }
 
-html {
-  font-size: 16px;
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
-body {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+#root {
+  width: 100%;
+  min-height: 100vh;
 }
 
-/* Consistent spacing system */
-.space-optimal > * + * {
-  margin-top: 1.5rem;
+/* Full-width utilities */
+.w-full-viewport {
+  width: 100vw;
 }
 
-/* Perfect form control sizing */
-.form-input-optimal {
-  height: 3rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  border-width: 2px;
-  border-radius: 0.5rem;
-  padding-left: 2.5rem;
-  padding-right: 1rem;
-  transition: all 0.2s ease;
+.max-w-none {
+  max-width: none;
 }
 
-.form-input-optimal:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  border-color: #3B82F6;
+/* Enhanced card styling for full-width layout */
+.card {
+  @apply bg-white rounded-xl shadow-lg border border-gray-100 p-6;
 }
 
-/* Optimal card sizing */
-.card-optimal {
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  border: 1px solid #f3f4f6;
-  background-color: white;
+.card-large {
+  @apply bg-white rounded-2xl shadow-xl border border-gray-100 p-8;
 }
 
-.card-optimal:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+/* Button enhancements */
+.btn-primary {
+  @apply bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200;
 }
 
-/* Perfect button sizing */
-.btn-optimal {
-  height: 3rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 0.5rem;
-  transition: all 0.2s ease;
+.btn-primary-large {
+  @apply bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-12 py-5 rounded-xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300;
 }
 
-/* Responsive text scaling */
-@media (max-width: 640px) {
-  .text-responsive-xl { font-size: 1.25rem; }
-  .text-responsive-lg { font-size: 1.125rem; }
-  .text-responsive { font-size: 1rem; }
+/* Form control enhancements for better width utilization */
+.form-input {
+  @apply w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white;
 }
 
-@media (min-width: 641px) {
-  .text-responsive-xl { font-size: 1.5rem; }
-  .text-responsive-lg { font-size: 1.25rem; }
-  .text-responsive { font-size: 1.125rem; }
+.form-input-large {
+  @apply w-full px-4 py-4 text-lg font-semibold border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white;
 }
 
-/* Grid gap optimization */
-.grid-optimal {
-  gap: 1.5rem;
+.form-label {
+  @apply block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2;
+}
+
+/* Grid system for full-width layouts */
+.grid-full-width {
+  display: grid;
+  width: 100%;
+  gap: 2rem;
 }
 
 @media (min-width: 1024px) {
-  .grid-optimal {
-    gap: 2rem;
+  .grid-full-width {
+    gap: 3rem;
   }
+}
+
+/* Status indicators */
+.status-badge-online {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800;
+}
+
+.status-badge-offline {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800;
+}
+
+/* Enhanced focus states */
+.focus-enhanced:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Responsive padding for full-width design */
+.responsive-padding {
+  @apply px-4 sm:px-6 lg:px-8;
+}
+
+/* Smooth scrollbar for better UX */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Ensure full-width on all devices */
+@media (max-width: 640px) {
+  .container-mobile-full {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    max-width: none;
+    width: 100%;
+  }
+}
+
+/* Remove any container max-width constraints */
+.container-full {
+  width: 100%;
+  max-width: none;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Animation enhancements */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.shimmer {
+  animation: shimmer 2s infinite;
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

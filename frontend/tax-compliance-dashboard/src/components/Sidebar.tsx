@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, Clock, Zap } from 'lucide-react';
+import { Zap } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
   return (

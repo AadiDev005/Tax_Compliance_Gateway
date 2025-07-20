@@ -1,63 +1,85 @@
 import React from 'react';
-import { ComposableMap, Geographies, Geography, Marker } from 'react-simple-maps';
-
-const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@3/countries-50m.json";
+import { Globe, MapPin } from 'lucide-react';
 
 const WorldMap: React.FC = () => {
-  const markers = [
-    { name: "Germany", coordinates: [10.4515, 51.1657] as [number, number], status: "active", flag: "🇩🇪" },
-    { name: "Italy", coordinates: [12.5674, 41.8719] as [number, number], status: "active", flag: "🇮🇹" },
-    { name: "Mexico", coordinates: [-102.5528, 23.6345] as [number, number], status: "active", flag: "🇲🇽" },
-    { name: "United States", coordinates: [-95.7129, 37.0902] as [number, number], status: "active", flag: "🇺🇸" },
-    { name: "Poland", coordinates: [19.1343, 51.9194] as [number, number], status: "active", flag: "🇵��" },
+  const countries = [
+    { name: "Germany", code: "DE", status: "active", flag: "🇩🇪", x: 52, y: 45 },
+    { name: "Italy", code: "IT", status: "active", flag: "🇮🇹", x: 55, y: 52 },
+    { name: "Mexico", code: "MX", status: "active", flag: "🇲🇽", x: 25, y: 65 },
+    { name: "United States", code: "US", status: "active", flag: "🇺🇸", x: 25, y: 45 },
+    { name: "Poland", code: "PL", status: "active", flag: "🇵🇱", x: 58, y: 40 },
+    { name: "Spain", code: "ES", status: "pending", flag: "🇪🇸", x: 45, y: 52 },
+    { name: "Brazil", code: "BR", status: "pending", flag: "🇧🇷", x: 35, y: 75 },
   ];
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Global Tax Compliance Coverage</h3>
-      <div className="w-full h-96 bg-gray-50 rounded-lg overflow-hidden">
-        <ComposableMap>
-          <Geographies geography={geoUrl}>
-            {({ geographies }) =>
-              geographies.map((geo) => (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  fill="#E5E7EB"
-                  stroke="#FFFFFF"
-                  className="hover:fill-blue-200 cursor-pointer transition-colors duration-200"
-                />
-              ))
-            }
-          </Geographies>
-          {markers.map(({ name, coordinates, status, flag }) => (
-            <Marker key={name} coordinates={coordinates}>
+    <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+          <Globe className="w-5 h-5 mr-2 text-blue-600" />
+          Global Tax Jurisdiction Map
+        </h3>
+        <div className="flex items-center space-x-4 text-sm">
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-green-500 rounded-full mr-1"></div>
+            <span>Active</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-yellow-500 rounded-full mr-1"></div>
+            <span>Pending</span>
+          </div>
+        </div>
+      </div>
+      
+      <div className="relative w-full h-80 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg overflow-hidden">
+        {/* Simplified World Map Background */}
+        <svg viewBox="0 0 100 60" className="w-full h-full">
+          <defs>
+            <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+              <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#E5E7EB" strokeWidth="0.5"/>
+            </pattern>
+          </defs>
+          <rect width="100" height="60" fill="url(#grid)" />
+          
+          {/* Country markers */}
+          {countries.map((country, index) => (
+            <g key={country.code}>
               <circle
-                r={8}
-                fill={status === "active" ? "#10B981" : "#EF4444"}
-                stroke="#fff"
-                strokeWidth={2}
-                className="animate-pulse cursor-pointer"
+                cx={country.x}
+                cy={country.y}
+                r="3"
+                fill={country.status === 'active' ? '#10B981' : '#F59E0B'}
+                stroke="#ffffff"
+                strokeWidth="2"
+                className="cursor-pointer hover:r-4 transition-all duration-200"
               />
               <text
+                x={country.x}
+                y={country.y + 8}
                 textAnchor="middle"
-                y={-15}
-                className="text-xs font-semibold fill-gray-700"
+                fontSize="4"
+                fill="#374151"
+                className="font-medium"
               >
-                {flag}
+                {country.flag}
               </text>
-            </Marker>
+            </g>
           ))}
-        </ComposableMap>
-      </div>
-      <div className="mt-4 flex justify-center space-x-6 text-sm">
-        <div className="flex items-center">
-          <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-          <span>Active ({markers.filter(m => m.status === "active").length})</span>
-        </div>
-        <div className="flex items-center">
-          <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
-          <span>Coming Soon</span>
+        </svg>
+        
+        {/* Country Status Cards */}
+        <div className="absolute bottom-4 left-4 right-4">
+          <div className="grid grid-cols-4 gap-2">
+            {countries.slice(0, 4).map((country) => (
+              <div key={country.code} className="bg-white/90 backdrop-blur-sm rounded-lg p-2 text-center border border-gray-200">
+                <div className="text-lg">{country.flag}</div>
+                <div className="text-xs font-medium text-gray-700">{country.code}</div>
+                <div className={`w-2 h-2 mx-auto mt-1 rounded-full ${
+                  country.status === 'active' ? 'bg-green-500' : 'bg-yellow-500'
+                }`}></div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

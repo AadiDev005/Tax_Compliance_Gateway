@@ -1,29 +1,26 @@
-import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Globe } from 'lucide-react';
-import SystemStatus from './components/SystemStatus';
-import TaxCalculator from './components/TaxCalculator';
+import Dashboard from './components/Dashboard';
 
-const queryClient = new QueryClient();
+// Create a stable QueryClient instance with anti-flickering configuration
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes - data stays fresh longer
+      gcTime: 10 * 60 * 1000, // 10 minutes - keep in cache longer
+      refetchOnWindowFocus: false, // Prevent refetch on window focus
+      refetchOnReconnect: false, // Prevent refetch on reconnect
+      refetchOnMount: false, // Prevent refetch on component mount
+      refetchInterval: false, // Disable automatic refetching
+    },
+  },
+});
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-gray-100">
-        <header className="bg-white shadow-sm">
-          <div className="max-w-5xl mx-auto px-4 py-4 flex items-center space-x-3">
-            <Globe className="w-8 h-8 text-primary-600" />
-            <h1 className="text-2xl font-bold text-gray-800">Tax Compliance Gateway</h1>
-          </div>
-        </header>
-        <main className="max-w-5xl mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-2">
-            <TaxCalculator />
-          </div>
-          <div>
-            <SystemStatus />
-          </div>
-        </main>
+      <div className="w-full min-h-screen">
+        <Dashboard />
       </div>
     </QueryClientProvider>
   );
