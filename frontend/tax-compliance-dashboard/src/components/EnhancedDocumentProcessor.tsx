@@ -3,24 +3,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, CheckCircle, Clock, AlertCircle, Eye, Download, Trash2, File } from 'lucide-react';
 import { api } from '../lib/api';
-
-interface ProcessingDocument {
-  id: string;
-  filename: string;
-  format: string;
-  size: number;
-  status: 'uploading' | 'processing' | 'completed' | 'error';
-  progress: number;
-  uploadTime: string;
-  previewUrl?: string;
-}
+import type { ProcessingDocument } from '../types/documents';
 
 const EnhancedDocumentProcessor: React.FC = () => {
   const [processingDocs, setProcessingDocs] = useState<ProcessingDocument[]>([]);
   const [selectedDoc, setSelectedDoc] = useState<ProcessingDocument | null>(null);
   const queryClient = useQueryClient();
   
-  const { data: documents, isLoading } = useQuery({
+  const { data: documents } = useQuery({
     queryKey: ['documents'],
     queryFn: api.getDocuments,
     refetchInterval: 5000,
@@ -124,17 +114,20 @@ const EnhancedDocumentProcessor: React.FC = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  // Merge processing docs with existing documents
   const allDocuments = [
     ...processingDocs,
-    ...(documents?.data?.documents || []).map(doc => ({
+    ...(documents?.data?.documents || []).map((doc: any) => ({
       ...doc,
+      id: doc.id || Math.random().toString(36).substr(2, 9),
       progress: 100,
-      uploadTime: doc.uploadTime || new Date().toISOString()
+      uploadTime: doc.uploadDate || new Date().toISOString(),
+      status: 'completed' as const
     }))
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Enhanced Upload Area */}
       <div className="bg-white rounded-xl shadow-lg border border-gray-200">
         <div className="p-6 border-b border-gray-100">
@@ -218,7 +211,7 @@ const EnhancedDocumentProcessor: React.FC = () => {
                           <div className="flex items-center space-x-4 text-sm text-gray-500">
                             <span>{doc.format}</span>
                             <span>{formatFileSize(doc.size)}</span>
-                            <span>{new Date(doc.uploadTime).toLocaleString()}</span>
+                            <span>{new Date(doc.uploadTime || '').toLocaleString()}</span>
                           </div>
                           
                           {/* Progress Bar */}
@@ -307,7 +300,7 @@ const EnhancedDocumentProcessor: React.FC = () => {
                       </div>
                       <div className="flex justify-between">
                         <span>Uploaded:</span>
-                        <span>{new Date(selectedDoc.uploadTime).toLocaleDateString()}</span>
+                        <span>{new Date(selectedDoc.uploadTime || '').toLocaleDateString()}</span>
                       </div>
                       {selectedDoc.status === 'completed' && (
                         <div className="flex justify-between">
@@ -318,28 +311,13 @@ const EnhancedDocumentProcessor: React.FC = () => {
                     </div>
                   </div>
                   
-                  {selectedDoc.format === 'JSON' && (
-                    <div className="border rounded-lg p-4 bg-gray-50">
-                      <div className="text-sm font-medium text-gray-700 mb-2">JSON Preview</div>
-                      <pre className="text-xs text-gray-600 bg-white p-2 rounded border overflow-auto max-h-32">
-{`{
-  "invoiceNumber": "INV-001",
-  "amount": 1100000,
-  "currency": "USD",
-  "taxRate": 0.22,
-  "jurisdiction": "IT"
-}`}
-                      </pre>
-                    </div>
-                  )}
-                  
                   {selectedDoc.status === 'completed' && (
                     <div className="flex space-x-2">
                       <button className="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
                         View Results
                       </button>
                       <button className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
-                        Download
+                        <Download className="w-4 h-4" />
                       </button>
                     </div>
                   )}

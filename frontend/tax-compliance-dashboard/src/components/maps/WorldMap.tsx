@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, MapPin } from 'lucide-react';
+import { Globe } from 'lucide-react';
 
 const WorldMap: React.FC = () => {
   const countries = [
@@ -42,7 +42,7 @@ const WorldMap: React.FC = () => {
           <rect width="100" height="60" fill="url(#grid)" />
           
           {/* Country markers */}
-          {countries.map((country, index) => (
+          {countries.map((country) => (
             <g key={country.code}>
               <circle
                 cx={country.x}

@@ -1,27 +1,49 @@
+import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Dashboard from './components/Dashboard';
+import { AuthProvider, useAuth } from './components/auth/AuthProvider';
+import AppRouter from './router/AppRouter';
+import LoginPage from './components/auth/LoginPage';
 
-// Create a stable QueryClient instance with anti-flickering configuration
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
-      staleTime: 5 * 60 * 1000, // 5 minutes - data stays fresh longer
-      gcTime: 10 * 60 * 1000, // 10 minutes - keep in cache longer
-      refetchOnWindowFocus: false, // Prevent refetch on window focus
-      refetchOnReconnect: false, // Prevent refetch on reconnect
-      refetchOnMount: false, // Prevent refetch on component mount
-      refetchInterval: false, // Disable automatic refetching
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: false,
+      refetchInterval: false,
     },
   },
 });
 
+// This component needs to be inside AuthProvider to access useAuth
+const AppContent: React.FC = () => {
+  const { user, isLoading } = useAuth();
+
+  // Show loading spinner while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading Tax Compliance Gateway...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show LoginPage if no user, AppRouter if authenticated
+  return user ? <AppRouter /> : <LoginPage />;
+};
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="w-full min-h-screen">
-        <Dashboard />
-      </div>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { TrendingUp, Globe, Zap, Clock, Activity } from 'lucide-react';
 import { api } from '../lib/api';

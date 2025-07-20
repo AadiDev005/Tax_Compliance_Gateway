@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, Settings, Activity, Database, Shield, Bell, Download, Upload, Key, Globe } from 'lucide-react';
+import { Users, Settings, Activity, Database, Shield, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const AdminPanel: React.FC = () => {
@@ -27,13 +27,6 @@ const AdminPanel: React.FC = () => {
     { timestamp: '2025-07-20 13:22:14', user: 'admin@company.com', action: 'User permissions modified', details: 'Updated Mike Chen role', severity: 'warning' },
     { timestamp: '2025-07-20 12:15:33', user: 'system', action: 'Backup completed', details: 'Database backup successful', severity: 'success' },
     { timestamp: '2025-07-20 11:08:45', user: 'lisa@company.com', action: 'Compliance report generated', details: 'Q2 2025 report', severity: 'info' }
-  ];
-
-  const apiUsageStats = [
-    { endpoint: '/api/tax/calculate', calls: 15847, avgResponse: '15ms', errorRate: '0.1%', status: 'excellent' },
-    { endpoint: '/api/documents/upload', calls: 3421, avgResponse: '245ms', errorRate: '0.3%', status: 'good' },
-    { endpoint: '/api/regulatory/changes', calls: 892, avgResponse: '32ms', errorRate: '0.0%', status: 'excellent' },
-    { endpoint: '/api/system/health', calls: 45123, avgResponse: '8ms', errorRate: '0.0%', status: 'excellent' }
   ];
 
   const getStatusColor = (status: string) => {
@@ -95,7 +88,7 @@ const AdminPanel: React.FC = () => {
             { id: 'users', name: 'User Management', icon: Users },
             { id: 'settings', name: 'System Settings', icon: Settings },
             { id: 'audit', name: 'Audit Logs', icon: Shield },
-            { id: 'api', name: 'API Analytics', icon: Globe }
+            { id: 'backup', name: 'Backup & Export', icon: Download }
           ].map(section => {
             const Icon = section.icon;
             return (
@@ -116,7 +109,7 @@ const AdminPanel: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* Content Sections */}
+      {/* User Management Section */}
       {activeSection === 'users' && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -158,12 +151,10 @@ const AdminPanel: React.FC = () => {
                         {user.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(user.lastLogin).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                      <button className="text-blue-600 hover:text-blue-900">Edit</button>
-                      <button className="text-red-600 hover:text-red-900">Delete</button>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.lastLogin}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <button className="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                      <button className="text-red-600 hover:text-red-900">Disable</button>
                     </td>
                   </tr>
                 ))}
@@ -173,106 +164,59 @@ const AdminPanel: React.FC = () => {
         </motion.div>
       )}
 
+      {/* System Settings Section */}
       {activeSection === 'settings' && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="space-y-6"
+          className="bg-white rounded-2xl p-8 shadow-lg border"
         >
-          <div className="bg-white rounded-2xl p-8 shadow-lg border">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">System Configuration</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {systemSettings.map((setting, index) => (
-                <div key={index} className="p-4 bg-gray-50 rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="font-semibold text-gray-900">{setting.category}</h3>
-                      <p className="text-sm text-gray-600">{setting.setting}</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-medium">{setting.value}</div>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(setting.status)}`}>
-                        {setting.status}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">System Configuration</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-2xl p-6 shadow-lg border">
-              <h3 className="text-lg font-semibold mb-4">Backup & Export</h3>
-              <div className="space-y-3">
-                <button className="w-full flex items-center justify-center px-4 py-3 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
-                  <Download className="w-5 h-5 mr-2" />
-                  Export System Data
-                </button>
-                <button className="w-full flex items-center justify-center px-4 py-3 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors">
-                  <Upload className="w-5 h-5 mr-2" />
-                  Import Configuration
-                </button>
-                <button className="w-full flex items-center justify-center px-4 py-3 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors">
-                  <Shield className="w-5 h-5 mr-2" />
-                  Create Backup
-                </button>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 shadow-lg border">
-              <h3 className="text-lg font-semibold mb-4">Security Settings</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span>Two-Factor Authentication</span>
-                  <button className="px-3 py-1 bg-green-100 text-green-600 rounded">Enabled</button>
+            {systemSettings.map((setting, index) => (
+              <div key={index} className="bg-gray-50 rounded-xl p-6">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="font-semibold text-lg text-gray-900">{setting.category}</h3>
+                    <p className="text-gray-600">{setting.setting}</p>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(setting.status)}`}>
+                    {setting.status}
+                  </span>
                 </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span>API Rate Limiting</span>
-                  <button className="px-3 py-1 bg-green-100 text-green-600 rounded">Active</button>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span>Session Timeout</span>
-                  <span className="text-sm text-gray-600">30 minutes</span>
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-gray-900">{setting.value}</span>
+                  <button className="text-blue-600 hover:text-blue-800 text-sm">Configure</button>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </motion.div>
       )}
 
+      {/* Audit Logs Section */}
       {activeSection === 'audit' && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="bg-white rounded-2xl p-8 shadow-lg border"
         >
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Audit Trail</h2>
-            <div className="flex space-x-2">
-              <button className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100">
-                Filter
-              </button>
-              <button className="px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100">
-                Export
-              </button>
-            </div>
-          </div>
-          
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Audit Logs</h2>
           <div className="space-y-3">
             {auditLogs.map((log, index) => (
-              <div key={index} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3">
-                      <span className={`font-medium ${getSeverityColor(log.severity)}`}>
-                        {log.action}
-                      </span>
-                      <span className="text-sm text-gray-500">{log.user}</span>
+              <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-3">
+                    <span className={`w-3 h-3 rounded-full ${getSeverityColor(log.severity)}`}></span>
+                    <div>
+                      <div className="font-medium text-gray-900">{log.action}</div>
+                      <div className="text-sm text-gray-600">{log.details}</div>
                     </div>
-                    <p className="text-sm text-gray-600 mt-1">{log.details}</p>
                   </div>
-                  <span className="text-xs text-gray-400">{log.timestamp}</span>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-medium text-gray-900">{log.user}</div>
+                  <div className="text-xs text-gray-500">{log.timestamp}</div>
                 </div>
               </div>
             ))}
@@ -280,31 +224,38 @@ const AdminPanel: React.FC = () => {
         </motion.div>
       )}
 
-      {activeSection === 'api' && (
+      {/* Default Overview */}
+      {activeSection === 'overview' && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="bg-white rounded-2xl p-8 shadow-lg border"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-8"
         >
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">API Usage Analytics</h2>
-          <div className="space-y-4">
-            {apiUsageStats.map((api, index) => (
-              <div key={index} className="p-4 bg-gray-50 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h3 className="font-mono font-semibold text-gray-900">{api.endpoint}</h3>
-                    <div className="flex space-x-4 text-sm text-gray-600 mt-1">
-                      <span>{api.calls.toLocaleString()} calls</span>
-                      <span>Avg: {api.avgResponse}</span>
-                      <span>Error: {api.errorRate}</span>
-                    </div>
-                  </div>
-                  <span className={`px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(api.status)}`}>
-                    {api.status}
-                  </span>
-                </div>
+          <div className="bg-white rounded-2xl p-6 shadow-lg border">
+            <h3 className="text-lg font-semibold mb-4">System Health</h3>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span>Tax Engine Service</span>
+                <span className="text-green-600 font-semibold">Healthy</span>
               </div>
-            ))}
+              <div className="flex justify-between items-center">
+                <span>Document Service</span>
+                <span className="text-green-600 font-semibold">Healthy</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>Database Connection</span>
+                <span className="text-green-600 font-semibold">Connected</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-2xl p-6 shadow-lg border">
+            <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
+            <div className="space-y-3">
+              <div className="text-sm text-gray-600">15,847 tax calculations today</div>
+              <div className="text-sm text-gray-600">1,247 documents processed</div>
+              <div className="text-sm text-gray-600">98.5% compliance rate</div>
+            </div>
           </div>
         </motion.div>
       )}

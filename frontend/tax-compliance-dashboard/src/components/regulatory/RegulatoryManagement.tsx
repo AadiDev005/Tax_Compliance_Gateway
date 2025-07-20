@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Bell, AlertTriangle, CheckCircle, Clock, FileText, Globe, TrendingUp } from 'lucide-react';
+import { Calendar, Bell, AlertTriangle, CheckCircle, Clock, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const RegulatoryManagement: React.FC = () => {

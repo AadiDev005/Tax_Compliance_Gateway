@@ -1,83 +1,81 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Calculator, FileText, Activity, BarChart3, Globe, Settings, Map } from 'lucide-react';
+import { Calculator, FileText, Activity, BarChart3, Globe, Bell, Shield } from 'lucide-react';
 import { api } from '../lib/api';
 import TaxCalculator from './TaxCalculator';
 import SystemStatus from './SystemStatus';
 import DocumentProcessor from './DocumentProcessor';
 import LiveMetrics from './LiveMetrics';
 import CountryGrid from './CountryGrid';
-import WorldMap from './WorldMap';
-import ProcessingPipeline from './ProcessingPipeline';
+import ProcessingPipeline from './visualizations/ProcessingPipeline';
+import ComprehensiveAnalytics from './analytics/ComprehensiveAnalytics';
+import RegulatoryManagement from './regulatory/RegulatoryManagement';
+import AdminPanel from './admin/AdminPanel';
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('calculator');
 
-  // Stable cache stats query with reduced refetching
   const { data: cacheStats } = useQuery({
     queryKey: ['cacheStats'],
     queryFn: api.getCacheStats,
-    staleTime: 30000, // 30 seconds
-    refetchInterval: 30000, // Refetch every 30 seconds instead of 10
-    refetchOnWindowFocus: false,
+    refetchInterval: 10000,
   });
 
-  // Memoize tabs to prevent recreation on every render
-  const tabs = useMemo(() => [
+  const tabs = [
     { 
       id: 'calculator', 
       name: 'Tax Calculator', 
       icon: Calculator, 
       description: 'Multi-jurisdiction calculations',
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
+      color: 'text-blue-600 dark:text-blue-400',
+      bgColor: 'bg-blue-50 dark:bg-blue-900/30'
     },
     { 
       id: 'documents', 
       name: 'Documents', 
       icon: FileText, 
       description: 'Document processing',
-      color: 'text-green-600',
-      bgColor: 'bg-green-50'
+      color: 'text-green-600 dark:text-green-400',
+      bgColor: 'bg-green-50 dark:bg-green-900/30'
     },
     { 
       id: 'analytics', 
       name: 'Analytics', 
       icon: BarChart3, 
       description: 'Advanced reporting',
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50'
+      color: 'text-orange-600 dark:text-orange-400',
+      bgColor: 'bg-orange-50 dark:bg-orange-900/30'
+    },
+    { 
+      id: 'regulatory', 
+      name: 'Regulatory', 
+      icon: Bell, 
+      description: 'Compliance management',
+      color: 'text-purple-600 dark:text-purple-400',
+      bgColor: 'bg-purple-50 dark:bg-purple-900/30'
     },
     { 
       id: 'admin', 
       name: 'Administration', 
-      icon: Settings, 
+      icon: Shield, 
       description: 'System management',
-      color: 'text-gray-600',
-      bgColor: 'bg-gray-50'
+      color: 'text-gray-600 dark:text-gray-400',
+      bgColor: 'bg-gray-50 dark:bg-gray-900/30'
     },
     { 
       id: 'monitoring', 
       name: 'System Status', 
       icon: Activity, 
       description: 'Service monitoring',
-      color: 'text-red-600',
-      bgColor: 'bg-red-50'
-    },
-    { 
-      id: 'map', 
-      name: 'Global Map', 
-      icon: Map, 
-      description: 'Jurisdiction overview',
-      color: 'text-teal-600',
-      bgColor: 'bg-teal-50'
+      color: 'text-red-600 dark:text-red-400',
+      bgColor: 'bg-red-50 dark:bg-red-900/30'
     }
-  ], []);
+  ];
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
-      {/* Stable Header */}
-      <div className="bg-white/90 backdrop-blur-sm shadow-lg border-b border-gray-200 sticky top-0 z-50">
+    <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-dark-900 dark:via-dark-800 dark:to-dark-900 transition-colors duration-200">
+      {/* Full-width Header */}
+      <div className="w-full bg-white/90 dark:bg-dark-800/90 backdrop-blur-sm shadow-lg border-b border-gray-200 dark:border-dark-700 sticky top-0 z-50 transition-colors duration-200">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between py-4 space-y-4 lg:space-y-0">
             <div className="flex items-center space-x-4">
@@ -85,39 +83,38 @@ const Dashboard: React.FC = () => {
                 <Globe className="h-7 w-7 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
+                <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent transition-colors duration-200">
                   Tax Compliance Gateway
                 </h1>
-                <p className="text-sm lg:text-base text-gray-600">
+                <p className="text-sm lg:text-base text-gray-600 dark:text-gray-300 transition-colors duration-200">
                   Enterprise-grade multi-jurisdiction tax processing platform
                 </p>
               </div>
             </div>
             
             <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6">
-              {/* Stable cache stats display */}
               {cacheStats?.data?.cache_statistics && (
-                <div className="bg-white rounded-xl px-4 py-3 border border-gray-200 shadow-sm">
-                  <div className="text-sm font-semibold text-gray-900">
+                <div className="bg-white dark:bg-dark-800 rounded-xl px-4 py-3 border border-gray-200 dark:border-dark-600 shadow-sm transition-colors duration-200">
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white">
                     Cache Hit: {cacheStats.data.cache_statistics.hit_rate_percent}%
                   </div>
-                  <div className="text-xs text-gray-600">
+                  <div className="text-xs text-gray-600 dark:text-gray-400">
                     {cacheStats.data.performance_summary?.performance_rating || 'Good'} Performance
                   </div>
                 </div>
               )}
               
-              <div className="flex items-center bg-green-50 rounded-xl px-4 py-3 border border-green-200">
+              <div className="flex items-center bg-green-50 dark:bg-green-900/30 rounded-xl px-4 py-3 border border-green-200 dark:border-green-800 transition-colors duration-200">
                 <div className="h-3 w-3 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                <span className="text-sm font-medium text-green-800">All Systems Online</span>
+                <span className="text-sm font-medium text-green-800 dark:text-green-300">All Systems Online</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stable Navigation */}
-      <div className="w-full bg-white shadow-sm border-b border-gray-100">
+      {/* Enhanced Navigation */}
+      <div className="w-full bg-white dark:bg-dark-800 shadow-sm border-b border-gray-100 dark:border-dark-700 transition-colors duration-200">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <nav className="flex space-x-0 overflow-x-auto">
             {tabs.map((tab) => {
@@ -126,16 +123,16 @@ const Dashboard: React.FC = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-shrink-0 flex items-center px-6 py-4 text-sm font-medium transition-colors duration-200 border-b-2 ${
+                  className={`flex-shrink-0 flex items-center px-6 py-4 text-sm font-medium transition-all duration-200 border-b-2 ${
                     activeTab === tab.id
-                      ? `${tab.color} ${tab.bgColor} border-blue-500`
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent'
+                      ? `${tab.color} ${tab.bgColor} border-blue-500 dark:border-blue-400`
+                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-dark-700 border-transparent'
                   }`}
                 >
                   <Icon className="h-5 w-5 mr-2" />
                   <div className="text-left">
                     <div>{tab.name}</div>
-                    <div className="text-xs text-gray-500 hidden sm:block">{tab.description}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">{tab.description}</div>
                   </div>
                 </button>
               );
@@ -144,83 +141,32 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Stable Content Area */}
+      {/* Full-width Content Area */}
       <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
-        <div className="transition-opacity duration-200">
-          {activeTab === 'calculator' && (
-            <div className="space-y-8">
-              <TaxCalculator />
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                <div className="xl:col-span-2">
-                  <LiveMetrics />
-                </div>
-                <div>
-                  <CountryGrid />
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {activeTab === 'documents' && <DocumentProcessor />}
-          
-          {activeTab === 'analytics' && (
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
-              <div className="text-center">
-                <BarChart3 className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Analytics Dashboard</h2>
-                <p className="text-gray-600 mb-6">
-                  Comprehensive analytics and reporting features
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <div className="font-semibold text-blue-800">Performance Metrics</div>
-                    <div className="text-blue-600">Real-time processing analytics</div>
-                  </div>
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <div className="font-semibold text-green-800">Compliance Reports</div>
-                    <div className="text-green-600">Regulatory compliance tracking</div>
-                  </div>
-                  <div className="bg-purple-50 p-4 rounded-lg">
-                    <div className="font-semibold text-purple-800">Cost Analysis</div>
-                    <div className="text-purple-600">ROI and savings calculations</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {activeTab === 'admin' && (
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
-              <div className="text-center">
-                <Settings className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">System Administration</h2>
-                <p className="text-gray-600 mb-6">
-                  User management, system configuration, and administrative controls
-                </p>
-              </div>
-            </div>
-          )}
-          
-          {activeTab === 'monitoring' && (
-            <div className="space-y-8">
-              <SystemStatus />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {activeTab === 'calculator' && (
+          <div className="space-y-8">
+            <TaxCalculator />
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+              <div className="xl:col-span-2">
                 <LiveMetrics />
-                <ProcessingPipeline />
               </div>
-            </div>
-          )}
-          
-          {activeTab === 'map' && (
-            <div className="space-y-8">
-              <WorldMap />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div>
                 <CountryGrid />
-                <LiveMetrics />
               </div>
             </div>
-          )}
-        </div>
+            <ProcessingPipeline />
+          </div>
+        )}
+        
+        {activeTab === 'documents' && <DocumentProcessor />}
+        
+        {activeTab === 'analytics' && <ComprehensiveAnalytics />}
+        
+        {activeTab === 'regulatory' && <RegulatoryManagement />}
+        
+        {activeTab === 'admin' && <AdminPanel />}
+        
+        {activeTab === 'monitoring' && <SystemStatus />}
       </div>
     </div>
   );

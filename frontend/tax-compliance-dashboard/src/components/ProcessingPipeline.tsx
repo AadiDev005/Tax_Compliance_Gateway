@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, FileText, Cog, CheckCircle, Clock } from 'lucide-react';
+import { ArrowRight, FileText, Cog, CheckCircle } from 'lucide-react';
 
 const ProcessingPipeline: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
